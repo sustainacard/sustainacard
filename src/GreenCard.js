@@ -1,9 +1,4 @@
-// GreenCard Agent: Premium Digital Business Card Platform
-
 import React, { useState } from 'react';
-import { Card, CardContent } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
 import { QRCodeSVG } from 'qrcode.react';
 import { db } from './firebase';
 import { collection, addDoc } from 'firebase/firestore';
@@ -22,6 +17,7 @@ const GreenCard = () => {
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
+
     const { name, value } = e.target;
     if (name === 'name' && value.trim() === '') {
       setErrors((prev) => ({ ...prev, name: 'Name is required' }));
@@ -47,9 +43,9 @@ const GreenCard = () => {
   const saveToFirebase = async () => {
     try {
       await addDoc(collection(db, 'greencards'), form);
-      console.log('Card saved to Firestore!');
+      console.log('Saved to Firestore!');
     } catch (e) {
-      console.error('Error adding document: ', e);
+      console.error('Error saving: ', e);
     }
   };
 
@@ -67,67 +63,45 @@ const GreenCard = () => {
   const cardUrl = `https://oncallservices.ai/card/${encodeURIComponent(form.name)}`;
 
   return (
-    <div className="min-h-screen bg-gray-100 p-4 flex flex-col items-center">
-      <h1 className="text-2xl font-bold mb-4 text-green-700">GreenCard Generator</h1>
+    <div style={{ minHeight: '100vh', background: '#f4f4f4', padding: '2rem', fontFamily: 'sans-serif' }}>
+      <h1 style={{ fontSize: '1.75rem', fontWeight: 'bold', color: '#047857' }}>GreenCard Generator</h1>
 
-      <form className="w-full max-w-xl grid gap-4">
+      <form style={{ maxWidth: 600, margin: '1rem auto', display: 'grid', gap: '1rem' }}>
         <div>
-          <Input placeholder="Name" name="name" value={form.name} onChange={handleChange} />
-          {errors.name && <p className="text-red-500 text-sm">{errors.name}</p>}
+          <input placeholder="Name" name="name" value={form.name} onChange={handleChange} />
+          {errors.name && <p style={{ color: 'red', fontSize: '0.875rem' }}>{errors.name}</p>}
         </div>
 
-        <Input placeholder="Title" name="title" value={form.title} onChange={handleChange} />
-        <Input placeholder="Company" name="company" value={form.company} onChange={handleChange} />
-        <Input placeholder="Phone" name="phone" value={form.phone} onChange={handleChange} />
+        <input placeholder="Title" name="title" value={form.title} onChange={handleChange} />
+        <input placeholder="Company" name="company" value={form.company} onChange={handleChange} />
+        <input placeholder="Phone" name="phone" value={form.phone} onChange={handleChange} />
 
         <div>
-          <Input placeholder="Email" name="email" value={form.email} onChange={handleChange} />
-          {errors.email && <p className="text-red-500 text-sm">{errors.email}</p>}
+          <input placeholder="Email" name="email" value={form.email} onChange={handleChange} />
+          {errors.email && <p style={{ color: 'red', fontSize: '0.875rem' }}>{errors.email}</p>}
         </div>
 
-        <Input placeholder="Website" name="website" value={form.website} onChange={handleChange} />
+        <input placeholder="Website" name="website" value={form.website} onChange={handleChange} />
 
-        <Card className="mt-4 bg-white border shadow-xl rounded-2xl">
-          <CardContent className="p-6 text-center">
-            <h2 className="text-xl font-semibold text-green-800">{form.name}</h2>
-            <p className="text-sm text-gray-600">{form.title} at {form.company}</p>
-            <p className="text-sm text-gray-600">{form.email}</p>
-            <p className="text-sm text-gray-600">{form.phone}</p>
-            <p className="text-sm text-blue-600 underline">{form.website}</p>
-            <div className="mt-4">
-              <QRCodeSVG value={cardUrl} size={100} />
-            </div>
-          </CardContent>
-        </Card>
+        <div style={{ border: '1px solid #ccc', padding: '1rem', borderRadius: '1rem', background: '#fff', textAlign: 'center' }}>
+          <h2 style={{ fontSize: '1.25rem', fontWeight: '600', color: '#065f46' }}>{form.name}</h2>
+          <p>{form.title} at {form.company}</p>
+          <p>{form.email}</p>
+          <p>{form.phone}</p>
+          <a href={form.website} target="_blank" rel="noreferrer">{form.website}</a>
+          <div style={{ marginTop: '1rem' }}>
+            <QRCodeSVG value={cardUrl} size={100} />
+          </div>
+        </div>
 
-        <Button
-          className="w-full bg-green-600 hover:bg-green-700 text-white"
-          onClick={downloadAndSave}
+        <button
           type="button"
+          onClick={downloadAndSave}
+          style={{ width: '100%', background: '#047857', color: '#fff', padding: '0.5rem', borderRadius: '0.5rem', border: 'none' }}
         >
           Save & Download Digital Card
-        </Button>
+        </button>
       </form>
-
-      <style jsx>{`
-        @media (max-width: 640px) {
-          form {
-            padding: 1rem;
-          }
-
-          .text-xl {
-            font-size: 1.125rem;
-          }
-
-          .p-6 {
-            padding: 1rem;
-          }
-
-          .mt-4 {
-            margin-top: 1rem;
-          }
-        }
-      `}</style>
     </div>
   );
 };
